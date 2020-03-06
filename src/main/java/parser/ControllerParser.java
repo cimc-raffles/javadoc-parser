@@ -29,6 +29,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
 
+import assistant.SolverAssistant;
 import entity.ApiEntity;
 import entity.MethodEntity;
 import visitor.MethodVisitor;
@@ -50,11 +51,12 @@ public class ControllerParser {
         // Configure JavaParser to use type resolution
         JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
 
-
         StaticJavaParser.getConfiguration().setSymbolResolver(symbolSolver);
         
 		SourceRoot sourceRoot = new SourceRoot(path);
 		sourceRoot.getParserConfiguration().setSymbolResolver(symbolSolver);
+		
+		SolverAssistant.getInstance().setPath(path);
 
 		List<ParseResult<CompilationUnit>> list = new ArrayList<>();
 		try {

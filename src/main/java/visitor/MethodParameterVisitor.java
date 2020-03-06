@@ -21,6 +21,7 @@ import entity.ParameterEntity;
 import parser.EntityParser;
 
 public class MethodParameterVisitor extends VoidVisitorAdapter<List<ParameterEntity>> {
+	
 	@Override
 	public void visit(Parameter p, List<ParameterEntity> list) {
 		super.visit(p, list);

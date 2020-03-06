@@ -17,11 +17,10 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 
+import assistant.SolverAssistant;
 import entity.ParameterEntity;
 
 public class EntityParser {
-	
-	private String path = "E:/workspace/plugin/smaple/src/main/java";
 	
 	private ResolvedTypeDeclaration resolvedTypeDeclaration ;
 	
@@ -35,7 +34,8 @@ public class EntityParser {
 	public List<ParameterEntity> parse() throws IOException {
 		
 		String qualifiedName = resolvedTypeDeclaration.getQualifiedName();
-     
+		
+		String path = SolverAssistant.getInstance().getPath().toString();
         Path sourcePath = Paths.get( path, this.qualifiedName2Path(qualifiedName).concat( ".java"));
 
         CompilationUnit unit = StaticJavaParser.parse(sourcePath) ;
@@ -64,7 +64,12 @@ public class EntityParser {
 			VariableDeclarator variableDeclarator = node.getVariable(0);
 			parameter.setParent( resolvedTypeDeclaration.getQualifiedName());
 			parameter.setName( variableDeclarator.getNameAsString());
-			parameter.setType( variableDeclarator.getType().resolve().asReferenceType().getQualifiedName());
+			com.github.javaparser.ast.type.Type type = variableDeclarator.getType();
+			String computedType = type.isPrimitiveType() ? 
+									type.asPrimitiveType().getType().toString() :
+									type.resolve().asReferenceType().getQualifiedName()
+			;
+			parameter.setType( computedType);
 			Optional<Javadoc> comment = node.getJavadoc();
 			if( comment.isPresent()) {
 				Javadoc javadoc = comment.get() ;

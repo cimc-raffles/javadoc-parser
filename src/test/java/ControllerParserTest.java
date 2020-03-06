@@ -3,23 +3,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import entity.ApiEntity;
 import parser.ControllerParser;
 
 public class ControllerParserTest {
 	
+	@DisplayName("Javadoc parser testcase")
 	@Test
-	public void test() throws JsonProcessingException {
-		
-		String path = "./workspace/sample/src/main/java" ;
-		
-		ControllerParser parser = new ControllerParser() ;
-		List<ApiEntity> result = parser.parse(path) ;
-		
-		assertTrue( null != result && ! result.isEmpty());
+	void test() {
+
+		String path = "g:/workspace/java/sample-boot/src/main/java";
+
+		ControllerParser parser = new ControllerParser();
+		List<ApiEntity> result = parser.parse(path);
+
+		assertTrue(null != result && !result.isEmpty());
 	}
 }
