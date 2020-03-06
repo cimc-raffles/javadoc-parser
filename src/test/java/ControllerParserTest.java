@@ -1,9 +1,11 @@
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import entity.ApiEntity;
 import parser.ControllerParser;
@@ -11,9 +13,10 @@ import parser.ControllerParser;
 public class ControllerParserTest {
 	
 	@Test
-	@DisplayName("controller parser test")
-	void test() {
-		String path = "E:/workspace/plugin/sample/src/main/java" ;
+	public void test() throws JsonProcessingException {
+		
+		String path = "./workspace/sample/src/main/java" ;
+		
 		ControllerParser parser = new ControllerParser() ;
 		List<ApiEntity> result = parser.parse(path) ;
 		
