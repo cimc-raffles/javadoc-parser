@@ -12,9 +12,9 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.declarations.ResolvedClassDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 
 import assistant.VisitorAssistant;
 import entity.ParameterEntity;
@@ -38,15 +38,12 @@ public class MethodParameterVisitor extends VoidVisitorAdapter<List<ParameterEnt
 		entity.setName(p.getNameAsString());
 
 		// type
-		ClassOrInterfaceType type = p.getType().asClassOrInterfaceType();
-		ResolvedClassDeclaration resolvedClass = type.resolve().getTypeDeclaration().asClass();
-
-		String className = resolvedClass.getQualifiedName();
-
-		if (VisitorAssistant.isJavaNativeObject(className))
-			entity.setType(className);
+		Type type = p.getType();
+		
+		if ( ! type.isReferenceType())
+			entity.setType( VisitorAssistant.getTypeAsString(type));
 		else {
-			getCustomParameter(resolvedClass, customObjectParameters);
+			getCustomParameter( type.resolve().asReferenceType().getTypeDeclaration(), customObjectParameters);
 		}
 
 		if (customObjectParameters.isEmpty())
@@ -87,7 +84,7 @@ public class MethodParameterVisitor extends VoidVisitorAdapter<List<ParameterEnt
 		}
 	}
 
-	private void getCustomParameter(ResolvedClassDeclaration resolvedClass,List<ParameterEntity> result) {
+	private void getCustomParameter(ResolvedTypeDeclaration resolvedClass,List<ParameterEntity> result) {
 		
 		EntityParser parser = new EntityParser(resolvedClass) ;
 		

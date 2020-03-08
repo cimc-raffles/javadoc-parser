@@ -18,6 +18,7 @@ import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 
 import assistant.SolverAssistant;
+import assistant.VisitorAssistant;
 import entity.ParameterEntity;
 
 public class EntityParser {
@@ -65,11 +66,7 @@ public class EntityParser {
 			parameter.setParent( resolvedTypeDeclaration.getQualifiedName());
 			parameter.setName( variableDeclarator.getNameAsString());
 			com.github.javaparser.ast.type.Type type = variableDeclarator.getType();
-			String computedType = type.isPrimitiveType() ? 
-									type.asPrimitiveType().getType().toString() :
-									type.resolve().asReferenceType().getQualifiedName()
-			;
-			parameter.setType( computedType);
+			parameter.setType( VisitorAssistant.getTypeAsString(type));
 			Optional<Javadoc> comment = node.getJavadoc();
 			if( comment.isPresent()) {
 				Javadoc javadoc = comment.get() ;

@@ -24,6 +24,15 @@ public class VisitorAssistant {
 		return map;
 	}
 	
+	public static String getTypeAsString( com.github.javaparser.ast.type.Type type) {
+		String computedType = null ;
+		if( type.isPrimitiveType())
+			computedType = type.asPrimitiveType().getType().toString();
+		else if (type.isReferenceType())
+			computedType = type.resolve().asReferenceType().getQualifiedName();
+				
+		return computedType ;
+	}
  
 	public static String startsWithSlash( String text) {
 		String slash = "/" ;
