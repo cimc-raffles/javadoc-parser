@@ -1,7 +1,5 @@
 package visitor;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,19 +12,17 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
+import com.github.javaparser.resolution.types.ResolvedType;
 
 import assistant.VisitorAssistant;
 import entity.ParameterEntity;
-import parser.EntityParser;
+import parser.ParameterParser;
 
 public class MethodParameterVisitor extends VoidVisitorAdapter<List<ParameterEntity>> {
 	
 	@Override
 	public void visit(Parameter p, List<ParameterEntity> list) {
 		super.visit(p, list);
-
-		List<ParameterEntity> customObjectParameters = new ArrayList<>();
 
 		ParameterEntity entity = new ParameterEntity();
 
@@ -39,14 +35,13 @@ public class MethodParameterVisitor extends VoidVisitorAdapter<List<ParameterEnt
 
 		// type
 		Type type = p.getType();
+		ResolvedType resolvedType = type.resolve() ;
 		
-		if ( ! type.isReferenceType())
-			entity.setType( VisitorAssistant.getTypeAsString(type));
-		else {
-			getCustomParameter( type.resolve().asReferenceType().getTypeDeclaration(), customObjectParameters);
-		}
-
-		if (customObjectParameters.isEmpty())
+		ParameterParser parser = new ParameterParser(resolvedType, entity) ;
+		
+		List<ParameterEntity> customObjectParameters = parser.parse() ;
+	
+		if ( null == customObjectParameters || customObjectParameters.isEmpty())
 			list.add(entity);
 		else
 			list.addAll(customObjectParameters);
@@ -82,22 +77,6 @@ public class MethodParameterVisitor extends VoidVisitorAdapter<List<ParameterEnt
 			super.visit(node, arg);
 			arg.setRequired(true);
 		}
-	}
-
-	private void getCustomParameter(ResolvedTypeDeclaration resolvedClass,List<ParameterEntity> result) {
-		
-		EntityParser parser = new EntityParser(resolvedClass) ;
-		
-		try {
-			List<ParameterEntity> list = parser.parse();
-			result.addAll(list);
-
-			//TODO: Recursion
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
 	}
 
 }

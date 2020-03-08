@@ -1,6 +1,5 @@
 package visitor;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +12,13 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.JavadocBlockTag;
 import com.github.javaparser.javadoc.description.JavadocDescription;
-import com.github.javaparser.resolution.types.ResolvedReferenceType;
+import com.github.javaparser.resolution.types.ResolvedType;
 
 import assistant.VisitorAssistant;
 import entity.ApiEntity;
 import entity.MethodEntity;
 import entity.ParameterEntity;
-import parser.EntityParser;
+import parser.ParameterParser;
 
 public class MethodVisitor extends VoidVisitorAdapter<ApiEntity> {
 	@Override
@@ -60,23 +59,19 @@ public class MethodVisitor extends VoidVisitorAdapter<ApiEntity> {
 		}
 		
 		//return
-		ResolvedReferenceType returnType = method.getType().resolve().asReferenceType();
+		ResolvedType returnType = method.getType().resolve();
 		
 		List<ParameterEntity> result = new ArrayList<>() ;
-		String className = returnType.getQualifiedName() ;
-		if ( VisitorAssistant.isJavaNativeObject(className)) {
-			ParameterEntity parameter = new ParameterEntity() ;
+		
+		ParameterEntity parameter = new ParameterEntity() ;
+		
+		ParameterParser parser = new ParameterParser(returnType, parameter) ;
+		List<ParameterEntity> parsedResult = parser.parse();
+		
+		if( null==parsedResult || parsedResult.isEmpty())
 			result.add(parameter);
-			parameter.setType(className);
-		} else {
-			EntityParser parser = new EntityParser(returnType.getTypeDeclaration()) ;
-			try {
-				List<ParameterEntity> parsedResult = parser.parse();
-				result.addAll(parsedResult);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		else
+			result.addAll(parsedResult);
 		
 		entity.setResponse(result);
 		

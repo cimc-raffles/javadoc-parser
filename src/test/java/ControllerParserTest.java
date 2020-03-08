@@ -19,7 +19,7 @@ public class ControllerParserTest {
 
 		ControllerParser parser = new ControllerParser();
 		List<ApiEntity> result = parser.parse(path);
-
+		
 		assertTrue(null != result && !result.isEmpty());
 	}
 }
